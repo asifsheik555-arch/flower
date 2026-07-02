@@ -3,130 +3,245 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>For You - Enchanted Garden</title>
+  <title>For You - Cinematic Garden</title>
   <style>
-    /* --- Base Styling & Night Sky --- */
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Playfair+Display:ital,wght@1,500&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background-color: #05080c; /* Deeper night sky */
+      background-color: #020305;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Jost', sans-serif;
+      color: white;
+    }
+
+    /* --- Loading Screen --- */
+    #loading {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #020305;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      z-index: 1000;
+      color: rgba(255, 182, 193, 0.7);
+      font-size: 14px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 300;
+      transition: opacity 1.5s ease, visibility 1.5s;
     }
 
-    .enchanted-garden {
-      position: relative;
-      width: 700px; /* Much wider for a full meadow */
-      height: 500px;
-      border: 1px solid #1a2530;
-      border-radius: 16px;
-      overflow: hidden;
-      cursor: pointer;
-      background: radial-gradient(circle at center bottom, #0d2133 0%, #05080c 80%);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-    }
-
-    /* --- The Sweet Message --- */
-    .sweet-message {
+    /* --- Scene Wrapper (Camera Zoom & Pan) --- */
+    #scene {
       position: absolute;
-      top: 40px;
-      width: 100%;
-      text-align: center;
-      color: #cbfcf1;
+      top: 0; left: 0; width: 100%; height: 100%;
+      transform-origin: center bottom;
+      transition: transform 15s ease-out; 
+      opacity: 0;
+    }
+
+    body.play #scene {
+      opacity: 1;
+      animation: scenePan 28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+    body.fade-out #scene {
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+
+    @keyframes scenePan {
+      0% { transform: translateY(-50px) scale(0.95); } 
+      10% { transform: translateY(0) scale(1); }
+      25% { transform: scale(1); } 
+      100% { transform: scale(1.1); }
+    }
+
+    /* --- Sky & Moon --- */
+    .sky {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, #020408 0%, #06111c 40%, #0c1622 100%);
+      opacity: 0;
+    }
+    body.play .sky {
+      animation: fadeIn 2s ease forwards 0.5s;
+    }
+
+    .moon {
+      position: absolute;
+      top: 12%; right: 15%;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle at 30% 30%, #fff, #ffe0e9);
+      border-radius: 50%;
+      box-shadow: 0 0 50px 10px rgba(255, 182, 193, 0.3), 0 0 120px rgba(255, 255, 255, 0.2);
       opacity: 0;
       transform: translateY(20px);
-      transition: all 2s ease-in-out;
-      z-index: 20;
-      pointer-events: none; /* Allows hover to work through the text */
+    }
+    body.play .moon {
+      animation: moonRise 4s ease-out forwards 1s;
     }
 
-    .sweet-message h2 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 300;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      text-shadow: 0 0 15px rgba(203, 252, 241, 0.8);
-    }
-
-    .sweet-message p {
-      margin-top: 10px;
-      font-size: 16px;
-      font-style: italic;
-      color: #fffca8;
-      text-shadow: 0 0 10px rgba(255, 252, 168, 0.6);
+    @keyframes moonRise {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* --- Twinkling Stars --- */
     .stars {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 70%;
       background-image: 
-        radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 80px 70px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 150px 120px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 250px 40px, #fff, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 350px 90px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 450px 30px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 550px 150px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 650px 70px, #fff, rgba(0,0,0,0));
-      opacity: 0.2;
-      transition: opacity 2s;
+        radial-gradient(1.5px 1.5px at 10% 20%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 30% 40%, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50% 10%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 70% 50%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90% 30%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 20% 60%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40% 80%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 60% 70%, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 80% 90%, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 15% 15%, rgba(255,182,193,0.8), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 85% 25%, rgba(255,182,193,0.8), rgba(0,0,0,0));
+      opacity: 0;
+      background-size: 200px 200px;
+    }
+    body.play .stars {
+      animation: fadeIn 3s ease forwards 1s, twinkle 4s infinite alternate 4s;
     }
 
-    /* --- Shared Plant Parts --- */
+    @keyframes twinkle {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* --- Shooting Star --- */
+    .shooting-star {
+      position: absolute;
+      top: 10%; right: 10%;
+      width: 200px; height: 2px;
+      background: linear-gradient(to left, rgba(255,255,255,0), #fff, #ffe0e9);
+      transform: rotate(-40deg) translateX(500px);
+      opacity: 0;
+      filter: drop-shadow(0 0 8px #fff);
+    }
+    body.play .shooting-star {
+      animation: shoot 1.2s ease-out forwards 10s;
+    }
+
+    @keyframes shoot {
+      0% { transform: rotate(-40deg) translateX(500px); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: rotate(-40deg) translateX(-1500px); opacity: 0; }
+    }
+
+    /* --- Ground --- */
+    .ground {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 25%;
+      background: radial-gradient(ellipse at top, #0c202a 0%, #020407 80%);
+      opacity: 0;
+    }
+    body.play .ground {
+      animation: fadeIn 2s ease forwards 1.5s;
+    }
+
+    /* --- Garden Base --- */
+    .garden {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1200px;
+      max-width: 100vw;
+      height: 450px;
+      pointer-events: none;
+    }
+
+    /* --- Grass --- */
+    .grass {
+      position: absolute;
+      bottom: 0;
+      width: 30px; height: 0;
+      border-left: 2px solid #084c42;
+      border-radius: 100% 0 0 0;
+      opacity: 0;
+    }
+    .g1 { left: 10%; transform: scaleX(-1); }
+    .g2 { left: 20%; border-left: 3px solid #0a5a4e; }
+    .g3 { left: 35%; transform: scaleX(-1); }
+    .g4 { left: 50%; border-left: 3px solid #0a5a4e; }
+    .g5 { left: 65%; transform: scaleX(-1); }
+    .g6 { left: 80%; border-left: 3px solid #0a5a4e; }
+    .g7 { left: 90%; }
+
+    body.play .grass { opacity: 0.7; }
+    body.play .g1 { animation: growGrass 2s ease forwards 2s; height: 60px; }
+    body.play .g2 { animation: growGrass 2.2s ease forwards 2.2s; height: 110px; }
+    body.play .g3 { animation: growGrass 1.8s ease forwards 2.1s; height: 70px; }
+    body.play .g4 { animation: growGrass 2.5s ease forwards 2.3s; height: 130px; }
+    body.play .g5 { animation: growGrass 2s ease forwards 2.4s; height: 90px; }
+    body.play .g6 { animation: growGrass 2.4s ease forwards 2.2s; height: 100px; }
+    body.play .g7 { animation: growGrass 1.7s ease forwards 2.5s; height: 50px; }
+
+    @keyframes growGrass {
+      from { height: 0; opacity: 0; }
+      to { opacity: 0.7; }
+    }
+
+    /* --- Flowers Shared --- */
     .flower-group {
       position: absolute;
       bottom: 0;
       display: flex;
       justify-content: center;
     }
-
     .stem {
-      position: absolute;
-      bottom: 0;
-      width: 4px;
-      height: 0px; 
-      background: linear-gradient(to top, #023630, #299e8c);
+      position: absolute; bottom: 0;
+      width: 4px; height: 0;
+      background: linear-gradient(to top, #043f38, #2ca996);
       border-radius: 10px 10px 0 0;
-      transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 0 8px rgba(41, 158, 140, 0.3);
     }
-
     .leaf {
       position: absolute;
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(45deg, #023630, #299e8c);
+      width: 30px; height: 30px;
+      background: linear-gradient(45deg, #043f38, #2ca996);
       opacity: 0.9;
-      transform: scale(0); 
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: scale(0);
     }
-
     .leaf-left { border-radius: 0 100% 0 100%; transform-origin: bottom right; }
     .leaf-right { border-radius: 100% 0 100% 0; transform-origin: bottom left; }
-
+    
     .flower-head {
       position: absolute;
       transform: scale(0);
-      transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 10;
     }
+    body.play .flower-head {
+      animation: sway 6s ease-in-out infinite alternate 15s; 
+    }
 
+    /* Different Petal Colors */
     .petal {
       position: absolute;
-      background: #cbfcf1;
       border-radius: 50% 50% 20% 20%;
-      box-shadow: 0 0 15px #4db8ff, inset 0 0 10px #4db8ff;
       transform-origin: bottom center;
+    }
+    .petal.blue {
+      background: rgba(203, 252, 241, 0.9);
+      box-shadow: 0 0 15px rgba(77, 184, 255, 0.6), inset 0 0 10px rgba(77, 184, 255, 0.5);
+    }
+    .petal.pink {
+      background: rgba(255, 182, 193, 0.9);
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.8), inset 0 0 12px rgba(255, 105, 180, 0.6);
+    }
+    .petal.purple {
+      background: rgba(230, 190, 255, 0.9);
+      box-shadow: 0 0 15px rgba(180, 100, 255, 0.6), inset 0 0 10px rgba(180, 100, 255, 0.5);
     }
 
     .p1 { transform: rotate(-45deg) translateY(-5px); }
@@ -134,249 +249,641 @@
     .p3 { transform: rotate(45deg) translateY(-5px); }
 
     .center {
-      width: 10px;
-      height: 10px;
+      width: 12px; height: 12px;
       background: #fffca8;
       border-radius: 50%;
-      position: absolute;
-      z-index: 3;
-      box-shadow: 0 0 20px 6px rgba(255, 252, 168, 0.9);
+      position: absolute; z-index: 3;
     }
+    .center.pink-glow { background: #ffe0e9; }
 
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 252, 168, 0.6); }
-      50% { box-shadow: 0 0 30px 12px rgba(255, 252, 168, 1); }
-    }
-
-    /* --- Positioning the 5 Flowers --- */
-
-    /* 1. Main Center Flower */
-    .center-flower { left: 50%; z-index: 5; }
+    /* --- Individual Flowers (7 Total) --- */
+    
+    /* 1. Center Flower (Pink, Blooms at 5s) */
+    .center-flower { left: 50%; z-index: 6; }
     .center-flower .stem { width: 6px; }
-    .center-flower .leaf { width: 40px; height: 40px; }
-    .center-flower .petal { width: 25px; height: 55px; }
-    .center-flower .leaf-left { bottom: 80px; left: -38px; }
-    .center-flower .leaf-right { bottom: 140px; left: 4px; }
-    .center-flower .flower-head { bottom: 245px; }
-    .center-flower .center { width: 14px; height: 14px; }
+    .center-flower .leaf { width: 45px; height: 45px; }
+    .center-flower .petal { width: 30px; height: 65px; border-radius: 50% 50% 15% 15%; }
+    .center-flower .leaf-left { bottom: 120px; left: -42px; }
+    .center-flower .leaf-right { bottom: 180px; left: 4px; }
+    .center-flower .flower-head { bottom: 310px; }
+    .center-flower .center { width: 18px; height: 18px; box-shadow: 0 0 40px 15px rgba(255, 182, 193, 0.9); }
 
-    /* 2. Mid Left Flower */
-    .left-flower { left: 35%; z-index: 4; }
-    .left-flower .stem { transform: rotate(-8deg); transform-origin: bottom; }
-    .left-flower .petal { width: 20px; height: 40px; }
-    .left-flower .leaf-left { bottom: 60px; left: -28px; }
-    .left-flower .flower-head { bottom: 175px; left: -25px; transform-origin: bottom; }
+    body.play .center-flower .stem { animation: growStemCenter 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4.5s; height: 320px; }
+    body.play .center-flower .leaf-left { animation: popLeaf 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 5.2s; }
+    body.play .center-flower .leaf-right { animation: popLeaf 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 5.4s; }
+    body.play .center-flower .flower-head { animation: popFlowerCenter 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 5.8s; }
+    body.play .center-flower .center { animation: intenseGlowPink 3s ease-in-out infinite alternate 6s; }
 
-    /* 3. Mid Right Flower */
-    .right-flower { left: 65%; z-index: 4; }
-    .right-flower .stem { transform: rotate(8deg); transform-origin: bottom; }
-    .right-flower .petal { width: 20px; height: 40px; }
-    .right-flower .leaf-right { bottom: 70px; left: 2px; }
-    .right-flower .flower-head { bottom: 185px; left: 25px; transform-origin: bottom; }
-
-    /* 4. Far Left Flower (Smallest) */
-    .far-left-flower { left: 20%; z-index: 3; filter: brightness(0.7); }
-    .far-left-flower .stem { transform: rotate(-15deg); transform-origin: bottom; }
-    .far-left-flower .petal { width: 15px; height: 30px; }
-    .far-left-flower .leaf-left { bottom: 40px; left: -25px; }
-    .far-left-flower .flower-head { bottom: 125px; left: -30px; transform-origin: bottom; }
-
-    /* 5. Far Right Flower (Smallest) */
-    .far-right-flower { left: 80%; z-index: 3; filter: brightness(0.7); }
-    .far-right-flower .stem { transform: rotate(15deg); transform-origin: bottom; }
-    .far-right-flower .petal { width: 15px; height: 30px; }
-    .far-right-flower .leaf-right { bottom: 50px; left: -2px; }
-    .far-right-flower .flower-head { bottom: 135px; left: 35px; transform-origin: bottom; }
-
-    /* --- Grass --- */
-    .grass {
-      position: absolute;
-      bottom: 0;
-      width: 40px;
-      height: 0px;
-      border-left: 2px solid #023630;
-      border-radius: 100% 0 0 0;
-      transition: height 1s ease-in-out;
-      opacity: 0.5;
+    @keyframes growStemCenter { from { height: 0; } to { height: 320px; } }
+    @keyframes popFlowerCenter { from { transform: scale(0); } to { transform: scale(1.2); } }
+    @keyframes intenseGlowPink {
+      from { box-shadow: 0 0 30px 10px rgba(255, 182, 193, 0.7); }
+      to { box-shadow: 0 0 60px 25px rgba(255, 105, 180, 1); }
     }
-    .g1 { left: 10%; transform: scaleX(-1); }
-    .g2 { left: 25%; }
-    .g3 { left: 45%; transform: scaleX(-1); }
-    .g4 { left: 55%; }
-    .g5 { left: 75%; transform: scaleX(-1); }
-    .g6 { left: 90%; }
 
-    /* --- Magical Fireflies --- */
+    /* 2. Mid Left Flower (Purple, 3.2s) */
+    .mid-left { left: 40%; z-index: 5; }
+    .mid-left .stem { transform: rotate(-5deg); transform-origin: bottom; }
+    .mid-left .petal { width: 24px; height: 50px; }
+    .mid-left .leaf-left { bottom: 90px; left: -32px; }
+    .mid-left .flower-head { bottom: 235px; left: -18px; }
+
+    body.play .mid-left .stem { animation: growStemML 1.5s ease-out forwards 3.2s; height: 240px; }
+    body.play .mid-left .leaf-left { animation: popLeaf 0.8s ease-out forwards 3.8s; }
+    body.play .mid-left .flower-head { animation: popFlowerML 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4.3s; }
+    
+    @keyframes growStemML { from { height: 0; } to { height: 240px; } }
+    @keyframes popFlowerML { from { transform: scale(0) rotate(-10deg); } to { transform: scale(1) rotate(-10deg); } }
+
+    /* 3. Mid Right Flower (Blue, 3.4s) */
+    .mid-right { left: 60%; z-index: 5; }
+    .mid-right .stem { transform: rotate(5deg); transform-origin: bottom; }
+    .mid-right .petal { width: 24px; height: 50px; }
+    .mid-right .leaf-right { bottom: 100px; left: 2px; }
+    .mid-right .flower-head { bottom: 245px; left: 18px; }
+
+    body.play .mid-right .stem { animation: growStemMR 1.5s ease-out forwards 3.4s; height: 250px; }
+    body.play .mid-right .leaf-right { animation: popLeaf 0.8s ease-out forwards 4s; }
+    body.play .mid-right .flower-head { animation: popFlowerMR 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4.5s; }
+
+    @keyframes growStemMR { from { height: 0; } to { height: 250px; } }
+    @keyframes popFlowerMR { from { transform: scale(0) rotate(10deg); } to { transform: scale(1) rotate(10deg); } }
+
+    /* 4. Left Flower (Pink, 3.5s) */
+    .left-flower { left: 28%; z-index: 4; }
+    .left-flower .stem { transform: rotate(-12deg); transform-origin: bottom; }
+    .left-flower .petal { width: 20px; height: 45px; }
+    .left-flower .leaf-left { bottom: 70px; left: -28px; }
+    .left-flower .flower-head { bottom: 185px; left: -35px; }
+
+    body.play .left-flower .stem { animation: growStemL 1.5s ease-out forwards 3.5s; height: 190px; }
+    body.play .left-flower .leaf-left { animation: popLeaf 0.8s ease-out forwards 4s; }
+    body.play .left-flower .flower-head { animation: popFlowerL 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4.6s; }
+
+    @keyframes growStemL { from { height: 0; } to { height: 190px; } }
+    @keyframes popFlowerL { from { transform: scale(0) rotate(-18deg); } to { transform: scale(1) rotate(-18deg); } }
+
+    /* 5. Right Flower (Purple, 3.6s) */
+    .right-flower { left: 72%; z-index: 4; }
+    .right-flower .stem { transform: rotate(12deg); transform-origin: bottom; }
+    .right-flower .petal { width: 20px; height: 45px; }
+    .right-flower .leaf-right { bottom: 80px; left: 2px; }
+    .right-flower .flower-head { bottom: 195px; left: 35px; }
+
+    body.play .right-flower .stem { animation: growStemR 1.5s ease-out forwards 3.6s; height: 200px; }
+    body.play .right-flower .leaf-right { animation: popLeaf 0.8s ease-out forwards 4.2s; }
+    body.play .right-flower .flower-head { animation: popFlowerR 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 4.8s; }
+
+    @keyframes growStemR { from { height: 0; } to { height: 200px; } }
+    @keyframes popFlowerR { from { transform: scale(0) rotate(18deg); } to { transform: scale(1) rotate(18deg); } }
+
+    /* 6. Far Left Flower (Blue, 3.8s) */
+    .far-left { left: 15%; z-index: 3; filter: brightness(0.8); }
+    .far-left .stem { transform: rotate(-18deg); transform-origin: bottom; }
+    .far-left .petal { width: 16px; height: 35px; }
+    .far-left .leaf-left { bottom: 50px; left: -25px; }
+    .far-left .flower-head { bottom: 135px; left: -45px; }
+
+    body.play .far-left .stem { animation: growStemFL 1.2s ease-out forwards 3.8s; height: 150px; }
+    body.play .far-left .leaf-left { animation: popLeaf 0.8s ease-out forwards 4.4s; }
+    body.play .far-left .flower-head { animation: popFlowerFL 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 5s; }
+
+    @keyframes growStemFL { from { height: 0; } to { height: 150px; } }
+    @keyframes popFlowerFL { from { transform: scale(0) rotate(-25deg); } to { transform: scale(1) rotate(-25deg); } }
+
+    /* 7. Far Right Flower (Pink, 4s) */
+    .far-right { left: 85%; z-index: 3; filter: brightness(0.8); }
+    .far-right .stem { transform: rotate(18deg); transform-origin: bottom; }
+    .far-right .petal { width: 16px; height: 35px; }
+    .far-right .leaf-right { bottom: 60px; left: -2px; }
+    .far-right .flower-head { bottom: 145px; left: 45px; }
+
+    body.play .far-right .stem { animation: growStemFR 1.2s ease-out forwards 4s; height: 160px; }
+    body.play .far-right .leaf-right { animation: popLeaf 0.8s ease-out forwards 4.6s; }
+    body.play .far-right .flower-head { animation: popFlowerFR 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 5.2s; }
+
+    @keyframes growStemFR { from { height: 0; } to { height: 160px; } }
+    @keyframes popFlowerFR { from { transform: scale(0) rotate(25deg); } to { transform: scale(1) rotate(25deg); } }
+
+    @keyframes popLeaf {
+      from { transform: scale(0); }
+      to { transform: scale(1); }
+    }
+    @keyframes sway {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1) rotate(6deg); }
+    }
+
+    /* --- Magic Burst (on center bloom at 5.8s) --- */
+    .burst-particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #fff, 0 0 20px #ffb6c1;
+      opacity: 0;
+      z-index: 20;
+    }
+    .bp1 { bottom: 310px; left: 50%; }
+    .bp2 { bottom: 310px; left: 50%; }
+    .bp3 { bottom: 310px; left: 50%; }
+    .bp4 { bottom: 310px; left: 50%; }
+    .bp5 { bottom: 310px; left: 50%; }
+    .bp6 { bottom: 310px; left: 50%; }
+
+    body.play .bp1 { animation: burst1 1.5s ease-out forwards 5.8s; }
+    body.play .bp2 { animation: burst2 1.5s ease-out forwards 5.8s; }
+    body.play .bp3 { animation: burst3 1.5s ease-out forwards 5.8s; }
+    body.play .bp4 { animation: burst4 1.5s ease-out forwards 5.8s; }
+    body.play .bp5 { animation: burst5 1.5s ease-out forwards 5.8s; }
+    body.play .bp6 { animation: burst6 1.5s ease-out forwards 5.8s; }
+
+    @keyframes burst1 { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(-80px, -80px) scale(0); opacity: 0; } }
+    @keyframes burst2 { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(80px, -60px) scale(0); opacity: 0; } }
+    @keyframes burst3 { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(-40px, -120px) scale(0); opacity: 0; } }
+    @keyframes burst4 { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(50px, -100px) scale(0); opacity: 0; } }
+    @keyframes burst5 { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(-100px, -20px) scale(0); opacity: 0; } }
+    @keyframes burst6 { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(100px, -30px) scale(0); opacity: 0; } }
+
+    /* --- Fireflies & Butterflies --- */
     .firefly {
       position: absolute;
-      width: 3px;
-      height: 3px;
+      width: 4px; height: 4px;
       background: #fffca8;
       border-radius: 50%;
-      box-shadow: 0 0 10px 2px #fffca8;
+      box-shadow: 0 0 12px 3px #fffca8;
       opacity: 0;
     }
-    .f1 { left: 15%; bottom: 180px; }
-    .f2 { left: 30%; bottom: 250px; }
-    .f3 { left: 50%; bottom: 320px; }
-    .f4 { left: 70%; bottom: 220px; }
-    .f5 { left: 85%; bottom: 150px; }
-    .f6 { left: 40%; bottom: 120px; }
-    .f7 { left: 60%; bottom: 280px; }
+    .f1 { left: 20%; bottom: 200px; }
+    .f2 { left: 40%; bottom: 280px; box-shadow: 0 0 15px 4px #ffb6c1; background: #ffe0e9; } /* pink firefly */
+    .f3 { left: 55%; bottom: 350px; }
+    .f4 { left: 75%; bottom: 250px; box-shadow: 0 0 15px 4px #b464ff; background: #e6beff; } /* purple firefly */
+    .f5 { left: 85%; bottom: 180px; }
+    .f6 { left: 30%; bottom: 150px; }
 
-    @keyframes float {
+    body.play .f1 { animation: floatFirefly 5s ease-in-out infinite 6s; }
+    body.play .f2 { animation: floatFirefly 6s ease-in-out infinite 6.5s; }
+    body.play .f3 { animation: floatFirefly 4.5s ease-in-out infinite 7s; }
+    body.play .f4 { animation: floatFirefly 5.5s ease-in-out infinite 6.2s; }
+    body.play .f5 { animation: floatFirefly 7s ease-in-out infinite 6.8s; }
+    body.play .f6 { animation: floatFirefly 5.5s ease-in-out infinite 7.2s; }
+
+    @keyframes floatFirefly {
       0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
       20% { opacity: 1; transform: scale(1); }
       80% { opacity: 1; transform: scale(1); }
-      100% { transform: translateY(-80px) translateX(30px) scale(0); opacity: 0; }
+      100% { transform: translateY(-100px) translateX(40px) scale(0); opacity: 0; }
+    }
+
+    /* Butterflies (Appear at 10s) */
+    .butterfly {
+      position: absolute;
+      width: 14px; height: 14px;
+      z-index: 60;
+      opacity: 0;
+    }
+    .wing {
+      position: absolute;
+      width: 10px; height: 14px;
+      background: rgba(255, 182, 193, 0.7);
+      border-radius: 50% 50% 10% 10%;
+      box-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
+      top: 0;
+    }
+    .w-left { left: 0; transform-origin: center right; }
+    .w-right { left: 10px; transform-origin: center left; }
+    
+    .b1 { bottom: 200px; left: -20px; }
+    .b2 { bottom: 100px; right: -20px; }
+
+    body.play .b1 { animation: flutterPath1 12s ease-in-out forwards 10s; }
+    body.play .b2 { animation: flutterPath2 14s ease-in-out forwards 12s; }
+    body.play .w-left { animation: flapL 0.15s infinite alternate; }
+    body.play .w-right { animation: flapR 0.15s infinite alternate; }
+
+    @keyframes flapL { from { transform: rotateY(0deg) rotateZ(-20deg); } to { transform: rotateY(70deg) rotateZ(-20deg); } }
+    @keyframes flapR { from { transform: rotateY(0deg) rotateZ(20deg); } to { transform: rotateY(-70deg) rotateZ(20deg); } }
+    
+    @keyframes flutterPath1 {
+      0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translate(600px, -300px) scale(1); opacity: 0; }
+    }
+    @keyframes flutterPath2 {
+      0% { transform: translate(0, 0) scale(0.6) scaleX(-1); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translate(-700px, -400px) scale(1.2) scaleX(-1); opacity: 0; }
     }
 
 
-    /* =========================================
-       THE MASTER ANIMATION SEQUENCE (ON HOVER) 
-       ========================================= */
+    /* --- Falling Petals (Appear at 12s) --- */
+    .falling-petals {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 50;
+    }
+    .f-petal {
+      position: absolute;
+      top: -30px;
+      border-radius: 50% 50% 20% 20%;
+      opacity: 0;
+    }
+    .f-petal.pink { background: rgba(255, 182, 193, 0.7); box-shadow: 0 0 10px rgba(255, 105, 180, 0.4); }
+    .f-petal.blue { background: rgba(203, 252, 241, 0.7); box-shadow: 0 0 10px rgba(77, 184, 255, 0.4); }
+    
+    .fp1 { left: 15%; width: 18px; height: 35px; }
+    .fp2 { left: 45%; width: 14px; height: 28px; }
+    .fp3 { left: 75%; width: 20px; height: 40px; }
+    .fp4 { left: 30%; width: 15px; height: 30px; }
+    .fp5 { left: 85%; width: 16px; height: 32px; }
+    
+    body.play .fp1 { animation: fall 9s linear infinite 12s; }
+    body.play .fp2 { animation: fall 11s linear infinite 13s; }
+    body.play .fp3 { animation: fall 8s linear infinite 14s; }
+    body.play .fp4 { animation: fall 10s linear infinite 15s; }
+    body.play .fp5 { animation: fall 8.5s linear infinite 12.5s; }
 
-    /* Background changes */
-    .enchanted-garden:hover .stars { opacity: 0.8; }
-
-    /* Message Appears Last */
-    .enchanted-garden:hover .sweet-message {
-      opacity: 1;
-      transform: translateY(0);
-      transition-delay: 3s; /* Waits 3 seconds before showing the text */
+    @keyframes fall {
+      0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(220deg) translateX(150px); opacity: 0; }
     }
 
-    /* Grass grows instantly */
-    .enchanted-garden:hover .grass { height: 80px; }
-    .enchanted-garden:hover .g2 { height: 120px; transition-delay: 0.2s; }
-    .enchanted-garden:hover .g4 { height: 150px; transition-delay: 0.1s; }
-    .enchanted-garden:hover .g5 { height: 110px; transition-delay: 0.3s; }
+    /* --- Glassmorphism Message Card --- */
+    .message-container {
+      position: absolute;
+      top: 10%; left: 50%;
+      transform: translateX(-50%) translateY(30px);
+      width: 90%; max-width: 650px;
+      padding: 40px 30px;
+      background: rgba(20, 10, 30, 0.35);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 182, 193, 0.15);
+      border-radius: 25px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      text-align: center;
+      opacity: 0;
+      z-index: 100;
+      pointer-events: none;
+    }
 
-    /* 1. Center Flower Blooms (0.2s - 1.5s) */
-    .enchanted-garden:hover .center-flower .stem { height: 260px; transition-delay: 0.2s; }
-    .enchanted-garden:hover .center-flower .leaf-left { transform: scale(1) rotate(-20deg); transition-delay: 0.8s; }
-    .enchanted-garden:hover .center-flower .leaf-right { transform: scale(1) rotate(20deg); transition-delay: 1.0s; }
-    .enchanted-garden:hover .center-flower .flower-head { transform: scale(1); transition-delay: 1.5s; }
-    .enchanted-garden:hover .center-flower .center { animation: glowPulse 2s infinite ease-in-out 2s; }
+    body.play .message-container {
+      animation: slideUpFade 2s cubic-bezier(0.25, 1, 0.5, 1) forwards 8.5s;
+    }
 
-    /* 2. Mid Flowers Bloom (0.6s - 2.0s) */
-    .enchanted-garden:hover .left-flower .stem { height: 190px; transition-delay: 0.6s; }
-    .enchanted-garden:hover .left-flower .leaf-left { transform: scale(1) rotate(-15deg); transition-delay: 1.2s; }
-    .enchanted-garden:hover .left-flower .flower-head { transform: scale(1) rotate(-15deg); transition-delay: 1.8s; }
+    @keyframes slideUpFade {
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
 
-    .enchanted-garden:hover .right-flower .stem { height: 200px; transition-delay: 0.8s; }
-    .enchanted-garden:hover .right-flower .leaf-right { transform: scale(1) rotate(15deg); transition-delay: 1.4s; }
-    .enchanted-garden:hover .right-flower .flower-head { transform: scale(1) rotate(15deg); transition-delay: 2.0s; }
+    /* Message Typography */
+    .msg-title {
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: rgba(255, 182, 193, 0.8);
+      margin-bottom: 5px;
+      opacity: 0;
+    }
+    .msg-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 400;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #ffe0e9;
+      text-shadow: 0 0 20px rgba(255, 182, 193, 0.8);
+      margin-bottom: 25px;
+      opacity: 0;
+    }
 
-    /* 3. Far Flowers Bloom (1.2s - 2.5s) */
-    .enchanted-garden:hover .far-left-flower .stem { height: 140px; transition-delay: 1.2s; }
-    .enchanted-garden:hover .far-left-flower .leaf-left { transform: scale(1) rotate(-10deg); transition-delay: 1.6s; }
-    .enchanted-garden:hover .far-left-flower .flower-head { transform: scale(1) rotate(-20deg); transition-delay: 2.3s; }
+    .msg-line {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-style: italic;
+      color: #e0f2fe;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(224, 242, 254, 0.3);
+      overflow: hidden;
+      white-space: nowrap;
+      margin: 0 auto 12px auto;
+      width: 0;
+      border-right: 2px solid transparent; 
+    }
 
-    .enchanted-garden:hover .far-right-flower .stem { height: 150px; transition-delay: 1.4s; }
-    .enchanted-garden:hover .far-right-flower .leaf-right { transform: scale(1) rotate(10deg); transition-delay: 1.8s; }
-    .enchanted-garden:hover .far-right-flower .flower-head { transform: scale(1) rotate(20deg); transition-delay: 2.5s; }
+    /* Typing Timings */
+    body.play .msg-title { animation: fadeIn 2s ease forwards 9.5s; }
+    body.play .msg-subtitle { animation: fadeIn 2s ease forwards 10s; }
+    
+    body.play .line-1 { animation: typeWriter 2s steps(45, end) forwards 11s; }
+    body.play .line-2 { animation: typeWriter 2s steps(45, end) forwards 13.5s; color: #fffca8; text-shadow: 0 0 15px rgba(255, 252, 168, 0.6); }
+    
+    .signature {
+      margin-top: 30px;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 182, 193, 0.6);
+      opacity: 0;
+    }
+    body.play .signature { animation: fadeIn 2s ease forwards 16s; }
 
-    /* Fireflies start dancing */
-    .enchanted-garden:hover .f1 { animation: float 4s ease-in-out 1.2s infinite; }
-    .enchanted-garden:hover .f2 { animation: float 5s ease-in-out 1.5s infinite; }
-    .enchanted-garden:hover .f3 { animation: float 4.5s ease-in-out 2.5s infinite; }
-    .enchanted-garden:hover .f4 { animation: float 3.5s ease-in-out 1.8s infinite; }
-    .enchanted-garden:hover .f5 { animation: float 5.5s ease-in-out 2.2s infinite; }
-    .enchanted-garden:hover .f6 { animation: float 4s ease-in-out 3.0s infinite; }
-    .enchanted-garden:hover .f7 { animation: float 6s ease-in-out 2.8s infinite; }
+    @keyframes typeWriter {
+      from { width: 0; border-right-color: rgba(255,255,255,0.8); }
+      to { width: 100%; border-right-color: transparent; }
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* --- Floating Hearts Near Message (12s) --- */
+    .heart {
+      position: absolute;
+      color: #ff9a9e;
+      font-size: 16px;
+      opacity: 0;
+      text-shadow: 0 0 15px rgba(255, 154, 158, 0.9);
+    }
+    .h1 { top: -25px; left: 15%; }
+    .h2 { top: 40%; right: -25px; font-size: 20px; }
+    .h3 { bottom: -15px; left: 80%; }
+    .h4 { top: 20px; right: 15%; font-size: 12px; }
+
+    body.play .h1 { animation: floatHeart 4s ease-in-out infinite 12s; }
+    body.play .h2 { animation: floatHeart 5s ease-in-out infinite 12.5s; }
+    body.play .h3 { animation: floatHeart 4.5s ease-in-out infinite 13s; }
+    body.play .h4 { animation: floatHeart 6s ease-in-out infinite 14s; }
+
+    @keyframes floatHeart {
+      0% { transform: translateY(0) scale(0) rotate(-10deg); opacity: 0; }
+      20% { opacity: 0.9; transform: scale(1) rotate(10deg); }
+      80% { opacity: 0.9; transform: scale(1) rotate(-5deg); }
+      100% { transform: translateY(-50px) scale(0) rotate(20deg); opacity: 0; }
+    }
+
+    /* --- Audio Control --- */
+    #audio-control {
+      position: fixed;
+      top: 20px; right: 20px;
+      background: rgba(255, 182, 193, 0.1);
+      border: 1px solid rgba(255, 182, 193, 0.25);
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+      color: #fff;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    #audio-control:hover {
+      background: rgba(255, 182, 193, 0.25);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 182, 193, 0.4);
+    }
+    #audio-control svg {
+      width: 20px; height: 20px;
+      fill: currentColor;
+    }
+
+    /* --- Mobile Responsive --- */
+    @media (max-width: 768px) {
+      .message-container { padding: 30px 15px; width: 92%; top: 8%; }
+      .msg-subtitle { font-size: 28px; }
+      .msg-line { font-size: 16px; white-space: normal; width: 100%; opacity: 0; border: none; margin-bottom: 8px; }
+      
+      /* Replace typewriter with fade-in on mobile */
+      body.play .line-1 { animation: fadeIn 2s ease forwards 11s; }
+      body.play .line-2 { animation: fadeIn 2s ease forwards 13s; }
+
+      .garden { width: 100vw; height: 400px; }
+      .grass { display: none; }
+      .moon { width: 80px; height: 80px; right: 10%; }
+      .center-flower { transform: scale(0.8); transform-origin: bottom; }
+      .mid-left, .mid-right { transform: scale(0.7); transform-origin: bottom; }
+      .left-flower, .right-flower { transform: scale(0.6); transform-origin: bottom; }
+      .far-left, .far-right { display: none; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="enchanted-garden">
-    <!-- Night Sky -->
+  <!-- Loading Screen -->
+  <div id="loading">Growing something beautiful...</div>
+
+  <!-- Audio Element (Public Domain Piano) -->
+  <audio id="bgm" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_49bf17b6b1.mp3?filename=relaxing-piano-music-248868.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Audio Toggle -->
+  <div id="audio-control" title="Toggle Music">
+    <svg id="icon-mute" viewBox="0 0 24 24">
+      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+    </svg>
+    <svg id="icon-play" viewBox="0 0 24 24" style="display: none;">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+    </svg>
+  </div>
+
+  <div id="scene">
+    <div class="sky"></div>
     <div class="stars"></div>
+    <div class="moon"></div>
+    <div class="shooting-star"></div>
 
-    <!-- The Hidden Message -->
-    <div class="sweet-message">
-      <h2>For You</h2>
-      <p>Just like this garden, You are the most beautiful and brightest flower.</p>
+    <!-- Falling Petals overlay -->
+    <div class="falling-petals">
+      <div class="f-petal pink fp1"></div>
+      <div class="f-petal blue fp2"></div>
+      <div class="f-petal pink fp3"></div>
+      <div class="f-petal blue fp4"></div>
+      <div class="f-petal pink fp5"></div>
     </div>
 
-    <!-- Magical Fireflies -->
-    <div class="firefly f1"></div>
-    <div class="firefly f2"></div>
-    <div class="firefly f3"></div>
-    <div class="firefly f4"></div>
-    <div class="firefly f5"></div>
-    <div class="firefly f6"></div>
-    <div class="firefly f7"></div>
-
-    <!-- Decorative Grass -->
-    <div class="grass g1"></div>
-    <div class="grass g2"></div>
-    <div class="grass g3"></div>
-    <div class="grass g4"></div>
-    <div class="grass g5"></div>
-    <div class="grass g6"></div>
-
-    <!-- Flower 4 (Far Left) -->
-    <div class="flower-group far-left-flower">
-      <div class="stem"></div>
-      <div class="leaf leaf-left"></div>
-      <div class="flower-head">
-        <div class="petal p1"></div>
-        <div class="petal p2"></div>
-        <div class="petal p3"></div>
-        <div class="center"></div>
-      </div>
+    <!-- Butterflies overlay -->
+    <div class="butterfly b1">
+      <div class="wing w-left"></div><div class="wing w-right"></div>
+    </div>
+    <div class="butterfly b2">
+      <div class="wing w-left"></div><div class="wing w-right"></div>
     </div>
 
-    <!-- Flower 2 (Mid Left) -->
-    <div class="flower-group left-flower">
-      <div class="stem"></div>
-      <div class="leaf leaf-left"></div>
-      <div class="flower-head">
-        <div class="petal p1"></div>
-        <div class="petal p2"></div>
-        <div class="petal p3"></div>
-        <div class="center"></div>
-      </div>
+    <!-- Glassmorphism Message -->
+    <div class="message-container">
+      <div class="heart h1">❤</div>
+      <div class="heart h2">❤</div>
+      <div class="heart h3">❤</div>
+      <div class="heart h4">❤</div>
+      <div class="msg-title">For someone special</div>
+      <div class="msg-subtitle">For You</div>
+      <div class="msg-line line-1">Some people are beautiful like flowers.</div>
+      <div class="msg-line line-2">You feel more like the reason they bloom.</div>
+      <div class="signature">Made by MD. Asif Sheikh</div>
     </div>
 
-    <!-- Flower 5 (Far Right) -->
-    <div class="flower-group far-right-flower">
-      <div class="stem"></div>
-      <div class="leaf leaf-right"></div>
-      <div class="flower-head">
-        <div class="petal p1"></div>
-        <div class="petal p2"></div>
-        <div class="petal p3"></div>
-        <div class="center"></div>
-      </div>
-    </div>
+    <div class="ground"></div>
 
-    <!-- Flower 3 (Mid Right) -->
-    <div class="flower-group right-flower">
-      <div class="stem"></div>
-      <div class="leaf leaf-right"></div>
-      <div class="flower-head">
-        <div class="petal p1"></div>
-        <div class="petal p2"></div>
-        <div class="petal p3"></div>
-        <div class="center"></div>
-      </div>
-    </div>
+    <div class="garden">
+      <!-- Magic Dust Burst -->
+      <div class="burst-particle bp1"></div>
+      <div class="burst-particle bp2"></div>
+      <div class="burst-particle bp3"></div>
+      <div class="burst-particle bp4"></div>
+      <div class="burst-particle bp5"></div>
+      <div class="burst-particle bp6"></div>
 
-    <!-- Flower 1 (Main Center) -->
-    <div class="flower-group center-flower">
-      <div class="stem"></div>
-      <div class="leaf leaf-left"></div>
-      <div class="leaf leaf-right"></div>
-      <div class="flower-head">
-        <div class="petal p1"></div>
-        <div class="petal p2"></div>
-        <div class="petal p3"></div>
-        <div class="center"></div>
+      <!-- Grass Elements -->
+      <div class="grass g1"></div>
+      <div class="grass g2"></div>
+      <div class="grass g3"></div>
+      <div class="grass g4"></div>
+      <div class="grass g5"></div>
+      <div class="grass g6"></div>
+      <div class="grass g7"></div>
+
+      <!-- Fireflies -->
+      <div class="firefly f1"></div>
+      <div class="firefly f2"></div>
+      <div class="firefly f3"></div>
+      <div class="firefly f4"></div>
+      <div class="firefly f5"></div>
+      <div class="firefly f6"></div>
+
+      <!-- Flowers (7 Total) -->
+      
+      <!-- 6. Far Left -->
+      <div class="flower-group far-left">
+        <div class="stem"></div>
+        <div class="leaf leaf-left"></div>
+        <div class="flower-head">
+          <div class="petal blue p1"></div><div class="petal blue p2"></div><div class="petal blue p3"></div>
+          <div class="center"></div>
+        </div>
       </div>
+
+      <!-- 4. Left -->
+      <div class="flower-group left-flower">
+        <div class="stem"></div>
+        <div class="leaf leaf-left"></div>
+        <div class="flower-head">
+          <div class="petal pink p1"></div><div class="petal pink p2"></div><div class="petal pink p3"></div>
+          <div class="center"></div>
+        </div>
+      </div>
+
+      <!-- 2. Mid Left -->
+      <div class="flower-group mid-left">
+        <div class="stem"></div>
+        <div class="leaf leaf-left"></div>
+        <div class="flower-head">
+          <div class="petal purple p1"></div><div class="petal purple p2"></div><div class="petal purple p3"></div>
+          <div class="center"></div>
+        </div>
+      </div>
+
+      <!-- 3. Mid Right -->
+      <div class="flower-group mid-right">
+        <div class="stem"></div>
+        <div class="leaf leaf-right"></div>
+        <div class="flower-head">
+          <div class="petal blue p1"></div><div class="petal blue p2"></div><div class="petal blue p3"></div>
+          <div class="center"></div>
+        </div>
+      </div>
+
+      <!-- 5. Right -->
+      <div class="flower-group right-flower">
+        <div class="stem"></div>
+        <div class="leaf leaf-right"></div>
+        <div class="flower-head">
+          <div class="petal purple p1"></div><div class="petal purple p2"></div><div class="petal purple p3"></div>
+          <div class="center"></div>
+        </div>
+      </div>
+
+      <!-- 7. Far Right -->
+      <div class="flower-group far-right">
+        <div class="stem"></div>
+        <div class="leaf leaf-right"></div>
+        <div class="flower-head">
+          <div class="petal pink p1"></div><div class="petal pink p2"></div><div class="petal pink p3"></div>
+          <div class="center"></div>
+        </div>
+      </div>
+
+      <!-- 1. Center Flower -->
+      <div class="flower-group center-flower">
+        <div class="stem"></div>
+        <div class="leaf leaf-left"></div>
+        <div class="leaf leaf-right"></div>
+        <div class="flower-head">
+          <div class="petal pink p1"></div><div class="petal pink p2"></div><div class="petal pink p3"></div>
+          <div class="center pink-glow"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
+  <script>
+    // --- Audio Control ---
+    const bgm = document.getElementById('bgm');
+    const audioCtrl = document.getElementById('audio-control');
+    const iconMute = document.getElementById('icon-mute');
+    const iconPlay = document.getElementById('icon-play');
+    let isPlaying = false;
+
+    bgm.volume = 0.5;
+
+    audioCtrl.addEventListener('click', () => {
+      if (isPlaying) {
+        bgm.pause();
+        iconPlay.style.display = 'none';
+        iconMute.style.display = 'block';
+      } else {
+        bgm.play().catch(e => console.log("Audio play prevented:", e));
+        iconPlay.style.display = 'block';
+        iconMute.style.display = 'none';
+      }
+      isPlaying = !isPlaying;
+    });
+
+    // --- Cinematic Timeline Loop ---
+    const loading = document.getElementById('loading');
+    const cycleDuration = 35000; // Increased to 35 seconds to allow more time for the longer text
+    const fadeOutStart = 33000;  // 33 seconds
+
+    function startCycle() {
+      document.body.classList.remove('play', 'fade-out');
+      void document.body.offsetWidth;
+      document.body.classList.add('play');
+
+      setTimeout(() => {
+        document.body.classList.add('fade-out');
+      }, fadeOutStart);
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        loading.style.opacity = '0';
+        setTimeout(() => {
+          loading.style.visibility = 'hidden';
+          startCycle();
+          setInterval(startCycle, cycleDuration);
+        }, 1500);
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
