@@ -3,30 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enchanted Garden Animation</title>
+  <title>For You - Enchanted Garden</title>
   <style>
-    /* --- Base Styling --- */
+    /* --- Base Styling & Night Sky --- */
     body {
-      background-color: #0d131a;
+      background-color: #05080c; /* Deeper night sky */
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .enchanted-garden {
       position: relative;
-      width: 500px;
-      height: 450px;
+      width: 700px; /* Much wider for a full meadow */
+      height: 500px;
       border: 1px solid #1a2530;
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       cursor: pointer;
-      background: radial-gradient(circle at center bottom, #11202e 0%, #0d131a 70%);
+      background: radial-gradient(circle at center bottom, #0d2133 0%, #05080c 80%);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
     }
 
-    /* --- Shared Flower Parts --- */
+    /* --- The Sweet Message --- */
+    .sweet-message {
+      position: absolute;
+      top: 40px;
+      width: 100%;
+      text-align: center;
+      color: #cbfcf1;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 2s ease-in-out;
+      z-index: 20;
+      pointer-events: none; /* Allows hover to work through the text */
+    }
+
+    .sweet-message h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px rgba(203, 252, 241, 0.8);
+    }
+
+    .sweet-message p {
+      margin-top: 10px;
+      font-size: 16px;
+      font-style: italic;
+      color: #fffca8;
+      text-shadow: 0 0 10px rgba(255, 252, 168, 0.6);
+    }
+
+    /* --- Twinkling Stars --- */
+    .stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 80px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 150px 120px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 250px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 350px 90px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 450px 30px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 550px 150px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 650px 70px, #fff, rgba(0,0,0,0));
+      opacity: 0.2;
+      transition: opacity 2s;
+    }
+
+    /* --- Shared Plant Parts --- */
     .flower-group {
       position: absolute;
       bottom: 0;
@@ -37,38 +90,31 @@
     .stem {
       position: absolute;
       bottom: 0;
-      width: 5px;
-      height: 0px; /* Starts hidden */
-      background: linear-gradient(to top, #024b42, #299e8c);
+      width: 4px;
+      height: 0px; 
+      background: linear-gradient(to top, #023630, #299e8c);
       border-radius: 10px 10px 0 0;
-      transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 0 10px rgba(41, 158, 140, 0.4);
+      transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 8px rgba(41, 158, 140, 0.3);
     }
 
     .leaf {
       position: absolute;
-      width: 35px;
-      height: 35px;
-      background: linear-gradient(45deg, #024b42, #299e8c);
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(45deg, #023630, #299e8c);
       opacity: 0.9;
       transform: scale(0); 
-      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .leaf-left {
-      border-radius: 0 100% 0 100%;
-      transform-origin: bottom right;
-    }
-
-    .leaf-right {
-      border-radius: 100% 0 100% 0;
-      transform-origin: bottom left;
-    }
+    .leaf-left { border-radius: 0 100% 0 100%; transform-origin: bottom right; }
+    .leaf-right { border-radius: 100% 0 100% 0; transform-origin: bottom left; }
 
     .flower-head {
       position: absolute;
       transform: scale(0);
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -77,21 +123,19 @@
 
     .petal {
       position: absolute;
-      width: 22px;
-      height: 45px;
       background: #cbfcf1;
       border-radius: 50% 50% 20% 20%;
       box-shadow: 0 0 15px #4db8ff, inset 0 0 10px #4db8ff;
       transform-origin: bottom center;
     }
 
-    .p1 { transform: rotate(-45deg) translateY(-8px); }
-    .p2 { transform: rotate(0deg) translateY(-12px); z-index: 2; }
-    .p3 { transform: rotate(45deg) translateY(-8px); }
+    .p1 { transform: rotate(-45deg) translateY(-5px); }
+    .p2 { transform: rotate(0deg) translateY(-10px); z-index: 2; }
+    .p3 { transform: rotate(45deg) translateY(-5px); }
 
     .center {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       background: #fffca8;
       border-radius: 50%;
       position: absolute;
@@ -99,71 +143,68 @@
       box-shadow: 0 0 20px 6px rgba(255, 252, 168, 0.9);
     }
 
-    /* Throbbing glow for the main flower */
     @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 252, 168, 0.7); }
-      50% { box-shadow: 0 0 25px 10px rgba(255, 252, 168, 1); }
+      0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 252, 168, 0.6); }
+      50% { box-shadow: 0 0 30px 12px rgba(255, 252, 168, 1); }
     }
 
-    /* --- Positioning the Bouquet --- */
+    /* --- Positioning the 5 Flowers --- */
 
-    /* Center Flower */
-    .center-flower { left: 50%; }
-    .center-flower .leaf-left { bottom: 70px; left: -32px; }
-    .center-flower .leaf-right { bottom: 120px; left: 2px; }
-    .center-flower .flower-head { bottom: 215px; }
+    /* 1. Main Center Flower */
+    .center-flower { left: 50%; z-index: 5; }
+    .center-flower .stem { width: 6px; }
+    .center-flower .leaf { width: 40px; height: 40px; }
+    .center-flower .petal { width: 25px; height: 55px; }
+    .center-flower .leaf-left { bottom: 80px; left: -38px; }
+    .center-flower .leaf-right { bottom: 140px; left: 4px; }
+    .center-flower .flower-head { bottom: 245px; }
+    .center-flower .center { width: 14px; height: 14px; }
 
-    /* Left Flower */
-    .left-flower { left: 35%; }
-    .left-flower .stem { transform: rotate(-10deg); transform-origin: bottom; }
-    .left-flower .leaf-left { bottom: 50px; left: -30px; }
-    .left-flower .flower-head { bottom: 145px; left: -25px; transform-origin: bottom; }
+    /* 2. Mid Left Flower */
+    .left-flower { left: 35%; z-index: 4; }
+    .left-flower .stem { transform: rotate(-8deg); transform-origin: bottom; }
+    .left-flower .petal { width: 20px; height: 40px; }
+    .left-flower .leaf-left { bottom: 60px; left: -28px; }
+    .left-flower .flower-head { bottom: 175px; left: -25px; transform-origin: bottom; }
 
-    /* Right Flower */
-    .right-flower { left: 65%; }
-    .right-flower .stem { transform: rotate(10deg); transform-origin: bottom; }
-    .right-flower .leaf-right { bottom: 60px; left: 5px; }
-    .right-flower .flower-head { bottom: 155px; left: 25px; transform-origin: bottom; }
+    /* 3. Mid Right Flower */
+    .right-flower { left: 65%; z-index: 4; }
+    .right-flower .stem { transform: rotate(8deg); transform-origin: bottom; }
+    .right-flower .petal { width: 20px; height: 40px; }
+    .right-flower .leaf-right { bottom: 70px; left: 2px; }
+    .right-flower .flower-head { bottom: 185px; left: 25px; transform-origin: bottom; }
 
-    /* --- Grass/Ferns --- */
+    /* 4. Far Left Flower (Smallest) */
+    .far-left-flower { left: 20%; z-index: 3; filter: brightness(0.7); }
+    .far-left-flower .stem { transform: rotate(-15deg); transform-origin: bottom; }
+    .far-left-flower .petal { width: 15px; height: 30px; }
+    .far-left-flower .leaf-left { bottom: 40px; left: -25px; }
+    .far-left-flower .flower-head { bottom: 125px; left: -30px; transform-origin: bottom; }
+
+    /* 5. Far Right Flower (Smallest) */
+    .far-right-flower { left: 80%; z-index: 3; filter: brightness(0.7); }
+    .far-right-flower .stem { transform: rotate(15deg); transform-origin: bottom; }
+    .far-right-flower .petal { width: 15px; height: 30px; }
+    .far-right-flower .leaf-right { bottom: 50px; left: -2px; }
+    .far-right-flower .flower-head { bottom: 135px; left: 35px; transform-origin: bottom; }
+
+    /* --- Grass --- */
     .grass {
       position: absolute;
       bottom: 0;
       width: 40px;
       height: 0px;
-      border-left: 3px solid #024b42;
+      border-left: 2px solid #023630;
       border-radius: 100% 0 0 0;
       transition: height 1s ease-in-out;
-      opacity: 0.6;
+      opacity: 0.5;
     }
-    .g1 { left: 20%; transform: scaleX(-1); }
+    .g1 { left: 10%; transform: scaleX(-1); }
     .g2 { left: 25%; }
-    .g3 { left: 75%; }
-    .g4 { left: 80%; transform: scaleX(-1); }
-
-    /* --- THE ANIMATION SEQUENCE (On Hover) --- */
-
-    /* 1. Grass grows immediately */
-    .enchanted-garden:hover .g1 { height: 120px; transition-delay: 0s; }
-    .enchanted-garden:hover .g2 { height: 80px; transition-delay: 0.2s; }
-    .enchanted-garden:hover .g3 { height: 100px; transition-delay: 0.1s; }
-    .enchanted-garden:hover .g4 { height: 140px; transition-delay: 0.3s; }
-
-    /* 2. Center Flower blooms first */
-    .enchanted-garden:hover .center-flower .stem { height: 230px; transition-delay: 0.2s; }
-    .enchanted-garden:hover .center-flower .leaf-left { transform: scale(1) rotate(-20deg); transition-delay: 0.6s; }
-    .enchanted-garden:hover .center-flower .leaf-right { transform: scale(1) rotate(20deg); transition-delay: 0.8s; }
-    .enchanted-garden:hover .center-flower .flower-head { transform: scale(1); transition-delay: 1.2s; }
-    .enchanted-garden:hover .center-flower .pulse { animation: glowPulse 2s infinite ease-in-out 2s; }
-
-    /* 3. Left & Right Flowers follow shortly after */
-    .enchanted-garden:hover .left-flower .stem { height: 160px; transition-delay: 0.6s; }
-    .enchanted-garden:hover .left-flower .leaf-left { transform: scale(1) rotate(-15deg); transition-delay: 1.1s; }
-    .enchanted-garden:hover .left-flower .flower-head { transform: scale(0.8) rotate(-15deg); transition-delay: 1.5s; }
-
-    .enchanted-garden:hover .right-flower .stem { height: 170px; transition-delay: 0.8s; }
-    .enchanted-garden:hover .right-flower .leaf-right { transform: scale(1) rotate(15deg); transition-delay: 1.3s; }
-    .enchanted-garden:hover .right-flower .flower-head { transform: scale(0.8) rotate(15deg); transition-delay: 1.7s; }
+    .g3 { left: 45%; transform: scaleX(-1); }
+    .g4 { left: 55%; }
+    .g5 { left: 75%; transform: scaleX(-1); }
+    .g6 { left: 90%; }
 
     /* --- Magical Fireflies --- */
     .firefly {
@@ -175,37 +216,119 @@
       box-shadow: 0 0 10px 2px #fffca8;
       opacity: 0;
     }
-
-    .enchanted-garden:hover .f1 { animation: float 3s ease-in-out 1.2s infinite; left: 30%; bottom: 180px; }
-    .enchanted-garden:hover .f2 { animation: float 4s ease-in-out 1.5s infinite; left: 70%; bottom: 200px; }
-    .enchanted-garden:hover .f3 { animation: float 3.5s ease-in-out 2s infinite; left: 50%; bottom: 280px; }
-    .enchanted-garden:hover .f4 { animation: float 2.5s ease-in-out 1.8s infinite; left: 20%; bottom: 100px; }
-    .enchanted-garden:hover .f5 { animation: float 4.5s ease-in-out 2.2s infinite; left: 80%; bottom: 150px; }
+    .f1 { left: 15%; bottom: 180px; }
+    .f2 { left: 30%; bottom: 250px; }
+    .f3 { left: 50%; bottom: 320px; }
+    .f4 { left: 70%; bottom: 220px; }
+    .f5 { left: 85%; bottom: 150px; }
+    .f6 { left: 40%; bottom: 120px; }
+    .f7 { left: 60%; bottom: 280px; }
 
     @keyframes float {
       0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
-      50% { opacity: 1; transform: translateY(-30px) translateX(20px) scale(1); }
-      100% { transform: translateY(-60px) translateX(-10px) scale(0); opacity: 0; }
+      20% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; transform: scale(1); }
+      100% { transform: translateY(-80px) translateX(30px) scale(0); opacity: 0; }
     }
+
+
+    /* =========================================
+       THE MASTER ANIMATION SEQUENCE (ON HOVER) 
+       ========================================= */
+
+    /* Background changes */
+    .enchanted-garden:hover .stars { opacity: 0.8; }
+
+    /* Message Appears Last */
+    .enchanted-garden:hover .sweet-message {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 3s; /* Waits 3 seconds before showing the text */
+    }
+
+    /* Grass grows instantly */
+    .enchanted-garden:hover .grass { height: 80px; }
+    .enchanted-garden:hover .g2 { height: 120px; transition-delay: 0.2s; }
+    .enchanted-garden:hover .g4 { height: 150px; transition-delay: 0.1s; }
+    .enchanted-garden:hover .g5 { height: 110px; transition-delay: 0.3s; }
+
+    /* 1. Center Flower Blooms (0.2s - 1.5s) */
+    .enchanted-garden:hover .center-flower .stem { height: 260px; transition-delay: 0.2s; }
+    .enchanted-garden:hover .center-flower .leaf-left { transform: scale(1) rotate(-20deg); transition-delay: 0.8s; }
+    .enchanted-garden:hover .center-flower .leaf-right { transform: scale(1) rotate(20deg); transition-delay: 1.0s; }
+    .enchanted-garden:hover .center-flower .flower-head { transform: scale(1); transition-delay: 1.5s; }
+    .enchanted-garden:hover .center-flower .center { animation: glowPulse 2s infinite ease-in-out 2s; }
+
+    /* 2. Mid Flowers Bloom (0.6s - 2.0s) */
+    .enchanted-garden:hover .left-flower .stem { height: 190px; transition-delay: 0.6s; }
+    .enchanted-garden:hover .left-flower .leaf-left { transform: scale(1) rotate(-15deg); transition-delay: 1.2s; }
+    .enchanted-garden:hover .left-flower .flower-head { transform: scale(1) rotate(-15deg); transition-delay: 1.8s; }
+
+    .enchanted-garden:hover .right-flower .stem { height: 200px; transition-delay: 0.8s; }
+    .enchanted-garden:hover .right-flower .leaf-right { transform: scale(1) rotate(15deg); transition-delay: 1.4s; }
+    .enchanted-garden:hover .right-flower .flower-head { transform: scale(1) rotate(15deg); transition-delay: 2.0s; }
+
+    /* 3. Far Flowers Bloom (1.2s - 2.5s) */
+    .enchanted-garden:hover .far-left-flower .stem { height: 140px; transition-delay: 1.2s; }
+    .enchanted-garden:hover .far-left-flower .leaf-left { transform: scale(1) rotate(-10deg); transition-delay: 1.6s; }
+    .enchanted-garden:hover .far-left-flower .flower-head { transform: scale(1) rotate(-20deg); transition-delay: 2.3s; }
+
+    .enchanted-garden:hover .far-right-flower .stem { height: 150px; transition-delay: 1.4s; }
+    .enchanted-garden:hover .far-right-flower .leaf-right { transform: scale(1) rotate(10deg); transition-delay: 1.8s; }
+    .enchanted-garden:hover .far-right-flower .flower-head { transform: scale(1) rotate(20deg); transition-delay: 2.5s; }
+
+    /* Fireflies start dancing */
+    .enchanted-garden:hover .f1 { animation: float 4s ease-in-out 1.2s infinite; }
+    .enchanted-garden:hover .f2 { animation: float 5s ease-in-out 1.5s infinite; }
+    .enchanted-garden:hover .f3 { animation: float 4.5s ease-in-out 2.5s infinite; }
+    .enchanted-garden:hover .f4 { animation: float 3.5s ease-in-out 1.8s infinite; }
+    .enchanted-garden:hover .f5 { animation: float 5.5s ease-in-out 2.2s infinite; }
+    .enchanted-garden:hover .f6 { animation: float 4s ease-in-out 3.0s infinite; }
+    .enchanted-garden:hover .f7 { animation: float 6s ease-in-out 2.8s infinite; }
   </style>
 </head>
 <body>
 
   <div class="enchanted-garden">
+    <!-- Night Sky -->
+    <div class="stars"></div>
+
+    <!-- The Hidden Message -->
+    <div class="sweet-message">
+      <h2>For You</h2>
+      <p>Just like this garden, my world blooms when you're around.</p>
+    </div>
+
     <!-- Magical Fireflies -->
     <div class="firefly f1"></div>
     <div class="firefly f2"></div>
     <div class="firefly f3"></div>
     <div class="firefly f4"></div>
     <div class="firefly f5"></div>
+    <div class="firefly f6"></div>
+    <div class="firefly f7"></div>
 
     <!-- Decorative Grass -->
     <div class="grass g1"></div>
     <div class="grass g2"></div>
     <div class="grass g3"></div>
     <div class="grass g4"></div>
+    <div class="grass g5"></div>
+    <div class="grass g6"></div>
 
-    <!-- Left Flower -->
+    <!-- Flower 4 (Far Left) -->
+    <div class="flower-group far-left-flower">
+      <div class="stem"></div>
+      <div class="leaf leaf-left"></div>
+      <div class="flower-head">
+        <div class="petal p1"></div>
+        <div class="petal p2"></div>
+        <div class="petal p3"></div>
+        <div class="center"></div>
+      </div>
+    </div>
+
+    <!-- Flower 2 (Mid Left) -->
     <div class="flower-group left-flower">
       <div class="stem"></div>
       <div class="leaf leaf-left"></div>
@@ -217,7 +340,19 @@
       </div>
     </div>
 
-    <!-- Right Flower -->
+    <!-- Flower 5 (Far Right) -->
+    <div class="flower-group far-right-flower">
+      <div class="stem"></div>
+      <div class="leaf leaf-right"></div>
+      <div class="flower-head">
+        <div class="petal p1"></div>
+        <div class="petal p2"></div>
+        <div class="petal p3"></div>
+        <div class="center"></div>
+      </div>
+    </div>
+
+    <!-- Flower 3 (Mid Right) -->
     <div class="flower-group right-flower">
       <div class="stem"></div>
       <div class="leaf leaf-right"></div>
@@ -229,7 +364,7 @@
       </div>
     </div>
 
-    <!-- Center Flower -->
+    <!-- Flower 1 (Main Center) -->
     <div class="flower-group center-flower">
       <div class="stem"></div>
       <div class="leaf leaf-left"></div>
@@ -238,7 +373,7 @@
         <div class="petal p1"></div>
         <div class="petal p2"></div>
         <div class="petal p3"></div>
-        <div class="center pulse"></div>
+        <div class="center"></div>
       </div>
     </div>
   </div>
