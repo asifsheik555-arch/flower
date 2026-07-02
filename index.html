@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magical Glowing Flower</title>
+<style>
+  /* 1. Environment & Container */
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #020b14;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+
+  /* Starry Night Sky */
+  .night-sky {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-image: 
+      radial-gradient(2px 2px at 15% 25%, #ffffff 100%, transparent),
+      radial-gradient(1px 1px at 35% 45%, #a5f3fc 100%, transparent),
+      radial-gradient(2px 2px at 55% 15%, #ffffff 100%, transparent),
+      radial-gradient(1px 1px at 75% 65%, #a5f3fc 100%, transparent),
+      radial-gradient(2px 2px at 85% 25%, #ffffff 100%, transparent),
+      radial-gradient(1px 1px at 25% 75%, #a5f3fc 100%, transparent);
+    background-size: 300px 300px;
+    animation: twinkle 4s infinite alternate ease-in-out;
+    z-index: 0;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* 2. The Flower Structure */
+  .flower-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 400px;
+    margin-bottom: 50px;
+  }
+
+  /* Growing Stem */
+  .stem {
+    width: 10px;
+    height: 250px;
+    background: linear-gradient(to top, #013a3a, #0ad6d6);
+    border-radius: 5px;
+    /* This ensures it grows from the ground up, not the center */
+    transform-origin: bottom center;
+    transform: scaleY(0);
+    animation: growStem 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    box-shadow: 0 0 15px rgba(10, 214, 214, 0.4);
+    position: relative;
+  }
+
+  @keyframes growStem {
+    to { transform: scaleY(1); }
+  }
+
+  /* Organic Leaves */
+  .leaf {
+    position: absolute;
+    width: 70px;
+    height: 35px;
+    opacity: 0;
+    box-shadow: 0 0 15px rgba(10, 214, 214, 0.4);
+  }
+
+  .leaf-left {
+    bottom: 80px;
+    right: 5px; /* Attaches to the stem */
+    transform-origin: right bottom;
+    background: linear-gradient(to left, #013a3a, #0ad6d6);
+    /* Uneven border radius for a natural curve */
+    border-radius: 0 50px 0 50px; 
+    transform: rotate(-45deg) scale(0);
+    animation: unfurlLeft 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
+  }
+
+  .leaf-right {
+    bottom: 130px;
+    left: 5px;
+    transform-origin: left bottom;
+    background: linear-gradient(to right, #013a3a, #0ad6d6);
+    border-radius: 50px 0 50px 0;
+    transform: rotate(45deg) scale(0);
+    animation: unfurlRight 1.5s cubic-bezier(0.4, 0, 0.2, 1) 1.5s forwards;
+  }
+
+  @keyframes unfurlLeft {
+    to { transform: rotate(-45deg) scale(1); opacity: 1; }
+  }
+
+  @keyframes unfurlRight {
+    to { transform: rotate(45deg) scale(1); opacity: 1; }
+  }
+
+  /* 3. The Blooming Mechanism */
+  .bloom {
+    position: absolute;
+    top: 0;
+    left: 5px; /* Center perfectly above the 10px wide stem */
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+  }
+
+  .petal {
+    position: absolute;
+    bottom: 0;
+    left: -15px; /* Half of petal width to center it on the stem */
+    width: 30px;
+    height: 80px;
+    background: linear-gradient(to top, #027a7a, #a5f3fc);
+    border-radius: 50px 50px 10px 10px; /* Teardrop shape */
+    transform-origin: bottom center; /* Pivot from the bottom */
+    opacity: 0;
+    box-shadow: 0 0 20px rgba(165, 243, 252, 0.5);
+  }
+
+  /* CSS Variables handle the rotation angle for each petal */
+  .petal-1 { --r: 0deg;   animation: bloom 1.5s ease-out 2.0s forwards; }
+  .petal-2 { --r: 45deg;  animation: bloom 1.5s ease-out 2.2s forwards; }
+  .petal-3 { --r: 90deg;  animation: bloom 1.5s ease-out 2.4s forwards; }
+  .petal-4 { --r: 135deg; animation: bloom 1.5s ease-out 2.6s forwards; }
+  .petal-5 { --r: 180deg; animation: bloom 1.5s ease-out 2.8s forwards; }
+  .petal-6 { --r: 225deg; animation: bloom 1.5s ease-out 3.0s forwards; }
+  .petal-7 { --r: 270deg; animation: bloom 1.5s ease-out 3.2s forwards; }
+  .petal-8 { --r: 315deg; animation: bloom 1.5s ease-out 3.4s forwards; }
+
+  @keyframes bloom {
+    0% { transform: rotate(var(--r)) scale(0); opacity: 0; }
+    100% { transform: rotate(var(--r)) scale(1); opacity: 1; }
+  }
+
+  /* Glowing Core of the Flower */
+  .core {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, #ffffff, #fef08a);
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 0 0 20px #fef08a, 0 0 40px #ffffff;
+    animation: igniteCore 2s ease-out 3.5s forwards, pulseCore 2s infinite alternate 5.5s;
+    z-index: 20;
+  }
+
+  @keyframes igniteCore {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  @keyframes pulseCore {
+    0% { box-shadow: 0 0 20px #fef08a, 0 0 40px #ffffff; }
+    100% { box-shadow: 0 0 40px #fef08a, 0 0 80px #ffffff; }
+  }
+
+  /* 4. Particle Effects */
+  .firefly {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #a5f3fc;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #a5f3fc, 0 0 20px #a5f3fc;
+    opacity: 0;
+  }
+
+  .firefly-1 { bottom: 100px; left: -100px; animation: floatUp 4s infinite 2.5s; }
+  .firefly-2 { bottom: 150px; right: -120px; animation: floatUp 5s infinite 3s; }
+  .firefly-3 { bottom: 250px; left: -50px; animation: floatUp 4.5s infinite 3.5s; }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+    50% { opacity: 1; transform: translateY(-80px) translateX(30px) scale(1); }
+    100% { transform: translateY(-160px) translateX(-20px) scale(0); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <!-- Ambient background -->
+  <div class="night-sky"></div>
+  
+  <div class="flower-wrapper">
+    <div class="stem">
+      <!-- Attached leaves -->
+      <div class="leaf leaf-left"></div>
+      <div class="leaf leaf-right"></div>
+      
+      <!-- Flower head at the tip -->
+      <div class="bloom">
+        <div class="petal petal-1"></div>
+        <div class="petal petal-2"></div>
+        <div class="petal petal-3"></div>
+        <div class="petal petal-4"></div>
+        <div class="petal petal-5"></div>
+        <div class="petal petal-6"></div>
+        <div class="petal petal-7"></div>
+        <div class="petal petal-8"></div>
+        <div class="core"></div>
+      </div>
+      
+      <!-- Ambient sparks -->
+      <div class="firefly firefly-1"></div>
+      <div class="firefly firefly-2"></div>
+      <div class="firefly firefly-3"></div>
+    </div>
+  </div>
+</body>
+</html>
